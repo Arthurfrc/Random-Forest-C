@@ -39,6 +39,9 @@ int main() {
     int qtd_randomforest = 10;
     double acerto_total = 0;
     double acertos[60];
+    
+    //Add linha do pragma omp parallel
+    #pragma omp parallel for
     for(i=0; i < qtd_randomforest; i++) {
         tt = train_test_split(m, 0.80);
         arvore = cria_random_forest(10, 20, 10, tt.train);
@@ -56,6 +59,9 @@ int main() {
     double media = acerto_total / (double)qtd_randomforest;
     //cálculo do desvio padrão
     double aux, desvio=0;
+
+    //Add linha do pragma omp parallel
+    #pragma omp parallel for
     for(i = 0; i < qtd_randomforest; i++) {
         aux = (acertos[i] - media);
         desvio += aux*aux;
