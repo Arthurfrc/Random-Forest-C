@@ -18,6 +18,7 @@ RandomForest* cria_random_forest(int tam, int amostra_min, int altura_max, matri
     arv->n = tam;
     arv->v_arv = (No**)malloc(tam *sizeof(No*));
     
+    // Add linha de paralelização
     for(i=0; i < tam; i++) {
         amostra = amostra_min + ((rand()) % (dataset->i - 1 - amostra_min));
         altura = 1 + (rand() % altura_max);
@@ -39,6 +40,9 @@ double prever(RandomForest* node, Vetor row) {
     Vetor pred;
     pred.v = (double*)malloc(node->n * sizeof(double));
     pred.n = node->n;
+
+    // Add linha de paralelização
+    #pragma omp parallel for
     for(i=0; i<node->n; i++) {
         pred.v[i] = predict(node->v_arv[i], row);
     }
@@ -52,6 +56,9 @@ double prever(RandomForest* node, Vetor row) {
 double porcentagem_acerto(matriz* dataset, RandomForest* arv) {
     int i, k=0;
     Grupo *pred = matriz_to_grupo(dataset);
+
+    // Add linha de paralelização
+    #pragma omp parallel for
     for(i = 0; i < pred->n; i++) {
         double p=0, r=0;
         p = prever(arv, pred->v[i]);
@@ -76,6 +83,9 @@ void imprimir_radomforest(RandomForest* arv) {
 
 void desaloca_randomforest(RandomForest* arv) {
     int i;
+
+    // Add linha de paralelização
+    #pragma omp parallel for
     for(i=0; i < arv->n; i++) {
         desaloca_arvore(arv->v_arv[i]);
     }
